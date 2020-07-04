@@ -1,7 +1,7 @@
 let express = require('express');
 let router = express.Router();
 
-function accmulate(req, res, next) {
+function accumulate(req, res, next) {
   //  Accumulate events
   events = req.body;
   console.log('eh', events);
@@ -20,7 +20,7 @@ function print(req, res) {
   return res.status(200).end();
 }
 
-router.post('/', accmulate);
+router.post('/', accumulate);
 router.post('/', print);
 
 module.exports = router;
