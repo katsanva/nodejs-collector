@@ -6,6 +6,7 @@ const ThrottledReceiverService = require('./throttled-receiver.service');
 const FilterService = require('./filter.service');
 const ReporterService = require('./reporter.service');
 const Ajv = require('ajv');
+const DedupeService = require('./dedupe.service');
 
 /*
  * This may be async, in case we need
@@ -17,6 +18,7 @@ const init = () => {
   const reporter = new ReporterService(fanout);
   const filter = new FilterService(fanout, new Ajv());
   const throttle = new ThrottledReceiverService(fanout);
+  const dedupe = new DedupeService(fanout);
   const receiver = new ReceiverService(throttle);
 
   return {

@@ -1,4 +1,4 @@
-var debug = require('debug')('nodejs-collector:delayed-receiver');
+var debug = require('debug')('nodejs-collector:throttled-receiver');
 
 const {
   TOPIC_DATA_RECEIVED,
