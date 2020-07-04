@@ -2,6 +2,7 @@ const EventEmitter = require('events');
 
 const FanoutService = require('./fanout.service');
 const ReceiverService = require('./receiver.service');
+const ThrottledReceiverService = require('./throttled-receiver.service');
 const FilterService = require('./filter.service');
 const ReporterService = require('./reporter.service');
 const Ajv = require('ajv');
@@ -15,7 +16,8 @@ const init = () => {
 
   const reporter = new ReporterService(fanout);
   const filter = new FilterService(fanout, new Ajv());
-  const receiver = new ReceiverService(fanout);
+  const throttle = new ThrottledReceiverService(fanout);
+  const receiver = new ReceiverService(throttle);
 
   return {
     fanout,

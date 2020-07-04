@@ -1,17 +1,15 @@
 var debug = require('debug')('nodejs-collector:receiver');
 
-const { TOPIC_DATA_RECEIVED } = require('../lib/constants');
-
 module.exports = class ReceiverService {
   /**
    *
-   * @param {import('./fanout.service')} fanout
+   * @param {import('./throttled-receiver.service')} receiver
    */
-  constructor(fanout) {
-    this.fanout = fanout;
+  constructor(receiver) {
+    this.receiver = receiver;
   }
 
   receive(data) {
-    this.fanout.publish(TOPIC_DATA_RECEIVED, data);
+    this.receiver.receive(data);
   }
 };
