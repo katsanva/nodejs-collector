@@ -1,12 +1,9 @@
 const EventEmitter = require('events');
 
 const FanoutService = require('./fanout.service');
-const ReceiverService = require('./receiver.service');
-const ThrottledReceiverService = require('./throttled-receiver.service');
-const FilterService = require('./filter.service');
+const ReceiverFacadeService = require('./receiver-facade.service');
 const ReporterService = require('./reporter.service');
-const Ajv = require('ajv');
-const DedupeService = require('./dedupe.service');
+const { TOPIC_DATA_RECEIVED } = require('../lib/constants');
 
 /*
  * This may be async, in case we need
@@ -15,16 +12,12 @@ const DedupeService = require('./dedupe.service');
 const init = () => {
   const fanout = new FanoutService(new EventEmitter());
 
-  const reporter = new ReporterService(fanout);
-  const filter = new FilterService(fanout, new Ajv());
-  const throttle = new ThrottledReceiverService(fanout);
-  const dedupe = new DedupeService(fanout);
-  const receiver = new ReceiverService(throttle);
+  const reporter = new ReporterService(fanout, TOPIC_DATA_RECEIVED);
+  const receiver = new ReceiverFacadeService(fanout, TOPIC_DATA_RECEIVED);
 
   return {
     fanout,
     receiver,
-    filter,
     reporter,
   };
 };

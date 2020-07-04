@@ -2,7 +2,7 @@ const express = require('express');
 
 /**
  *
- * @param {{receiver: import('../services/receiver.service')}} receiver
+ * @param {{receiver: import('../services/receiver-facade.service')}} receiver
  */
 module.exports = ({ receiver }) => {
   const router = express.Router();

@@ -1,26 +1,26 @@
 var debug = require('debug')('nodejs-collector:filter');
+const Ajv = require('ajv');
 
-const {
-  TOPIC_DATA_RECEIVED,
-  TOPIC_DATA_FILTERED,
-} = require('../lib/constants');
-const schema = require('./message.schema.json');
+const schema = require('../lib/message.schema.json');
+const FanoutTransform = require('../lib/fanout-transform');
 
-module.exports = class FilterService {
+module.exports = class FilterService extends FanoutTransform {
   /**
    *
    * @param {import('./fanout.service')} fanout
-   * @param {import('ajv').Ajv} ajv
+   * @param {string} input
+   * @param {string} output
    */
-  constructor(fanout, ajv) {
-    this.fanout = fanout;
-    this.validate = ajv.compile(schema);
+  constructor(fanout, input, output) {
+    super(fanout, input, output);
+
+    this.validate = new Ajv().compile(schema);
 
     this.listen();
   }
 
   listen() {
-    this.fanout.subscribe(TOPIC_DATA_RECEIVED, (data) => this.filter(data));
+    this.fanout.subscribe(this.input, (data) => this.filter(data));
   }
 
   filter(data) {
@@ -32,6 +32,6 @@ module.exports = class FilterService {
       return;
     }
 
-    this.fanout.publish(TOPIC_DATA_FILTERED, data);
+    this.fanout.publish(this.output, data);
   }
 };

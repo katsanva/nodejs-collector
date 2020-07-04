@@ -12,7 +12,11 @@ class FanoutService {
   async subscribe(event, handler) {
     debug('subscribe', event);
 
-    this.ee.on(event, handler);
+    this.ee.on(event, (...args) => {
+      debug('receive', event, ...args);
+
+      handler(...args);
+    });
   }
 
   async publish(event, data) {

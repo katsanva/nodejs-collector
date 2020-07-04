@@ -1,20 +1,20 @@
 var debug = require('debug')('nodejs-collector:reporter');
 
-const { TOPIC_DATA_FILTERED } = require('../lib/constants');
-
 module.exports = class ReporterService {
   /**
    *
    * @param {import('./fanout.service')} fanout
+   * @param {string} input
    */
-  constructor(fanout) {
+  constructor(fanout, input) {
     this.fanout = fanout;
+    this.input = input;
 
     this.listen();
   }
 
   listen() {
-    this.fanout.subscribe(TOPIC_DATA_FILTERED, (data) => this.report(data));
+    this.fanout.subscribe(this.input, (data) => this.report(data));
   }
 
   report(data) {

@@ -2,27 +2,27 @@ var debug = require('debug')('nodejs-collector:dedupe');
 const LRU = require('lru-cache');
 const hasher = require('node-object-hash');
 const hashSortCoerce = hasher({ sort: true, coerce: true });
+const FanoutTransform = require('../lib/fanout-transform');
 
-const {
-  TOPIC_DATA_RECEIVED,
-  TOPIC_DATA_DEDUPED,
-  DEDUPE_INTERVAL,
-} = require('../lib/constants');
+const { DEDUPE_INTERVAL } = require('../lib/constants');
 
-module.exports = class DedupeService {
+module.exports = class DedupeService extends FanoutTransform {
   /**
    *
    * @param {import('./fanout.service')} fanout
+   * @param {string} input
+   * @param {string} output
    */
-  constructor(fanout) {
-    this.fanout = fanout;
+  constructor(fanout, input, output) {
+    super(fanout, input, output);
+
     this.cache = new LRU({ maxAge: DEDUPE_INTERVAL });
 
     this.listen();
   }
 
   listen() {
-    this.fanout.subscribe(TOPIC_DATA_RECEIVED, (data) => this.dedupe(data));
+    this.fanout.subscribe(this.input, (data) => this.dedupe(data));
   }
 
   dedupe(data) {
@@ -36,6 +36,6 @@ module.exports = class DedupeService {
 
     this.cache.set(hash, 1, DEDUPE_INTERVAL);
 
-    this.fanout.publish(TOPIC_DATA_DEDUPED, data);
+    this.fanout.publish(this.output, data);
   }
 };
