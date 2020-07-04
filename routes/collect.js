@@ -1,26 +1,24 @@
-let express = require('express');
-let router = express.Router();
+const express = require('express');
 
-function accumulate(req, res, next) {
-  //  Accumulate events
-  events = req.body;
-  console.log('eh', events);
+/**
+ *
+ * @param {{receiver: import('../services/receiver.service')}} receiver
+ */
+module.exports = ({ receiver }) => {
+  const router = express.Router();
+  /**
+   *
+   * @param {import('express').Request} req
+   * @param {import('express').Response} res
+   * @param {import('express').NextFunction} next
+   */
+  const accumulate = (req, res, next) => {
+    receiver.receive(req.body);
 
-  return next();
-}
+    res.status(202).end();
+  };
 
-function filter(e) {
-	return true;
-}
+  router.post('/', accumulate);
 
-function print(req, res) {
-  //  Print accumulted results
-
-  console.log('accumulated events');
-  return res.status(200).end();
-}
-
-router.post('/', accumulate);
-router.post('/', print);
-
-module.exports = router;
+  return router;
+};
